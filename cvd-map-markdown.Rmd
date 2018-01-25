@@ -33,6 +33,8 @@ library(ggplot2)
 library(ggmap)
 library(maps)
 library(mapdata)
+library(dplyr)
+library(stringr)
 ```
 
 ## Plotting the maps
@@ -51,4 +53,20 @@ ggplot() + geom_polygon(data=usa, aes(x=long, y=lat, group=group)) +
 
 That turned out pretty nice. The `coord_fixed()` function is very important when drawing maps. It "forces" a specific ration between the x and y axis. In our example, I asked for each *y* unit to be 1.3*x* unit. Why this is important? Because if we decide to change the size of file that we are saving, it knows the ratios and it will change accordingly, instead of potentially altering the ratios that we will use.
 
+## Plot the county map
+
+Now that we have a few things defined, lets plot the map with the counties just to see how it looks.
+
+```{r county-map}
+counties <- map_data("county")
+dim(counties)
+head(counties)
+tail(counties)
+# Just as an exercise will plot the USA map to define one parameter
+ggplot() + geom_polygon(data=counties, aes(x=long, y=lat, fill=region, group=group), color="white") +
+  coord_fixed(1.3) +
+  guides(fill=FALSE)
+```
+
+Now, we have the basic shape that we will use to create our maps.
 
