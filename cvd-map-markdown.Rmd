@@ -70,3 +70,9 @@ ggplot() + geom_polygon(data=counties, aes(x=long, y=lat, fill=region, group=gro
 
 Now, we have the basic shape that we will use to create our maps.
 
+## Getting data about counties
+
+Data was obtained from the [CDC](https://www.cdc.gov/). For this first analysis, I downloaded the data for **Deaths - Total Cardiovascular Disease** for both genders, 35+ year old individuals, from 2005 to 2015 (two year increment, 2005-2007, 2007-2009, etc). The files also have risk factors associated with CVD, such as **Obesity**, **Diabete**, and **Exercise**.
+
+
+
