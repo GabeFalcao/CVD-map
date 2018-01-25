@@ -172,3 +172,63 @@ ggplot() + geom_polygon(data=counties, aes(x=long, y=lat, fill=region, group=gro
 
 Now, we have the basic shape that we will use to create our maps.
 
+## Getting data about counties
+
+Data was obtained from the [CDC](https://www.cdc.gov/). For this first analysis, I downloaded the data for **Deaths - Total Cardiovascular Disease** for both genders, 35+ year old individuals, from 2005 to 2015 (two year increment, 2005-2007, 2007-2009, etc). The files also have risk factors associated with CVD, such as **Obesity**, **Diabete**, and **Exercise**.
+
+
+```r
+#r stands for raw right now
+r.total.05.07 <- as.data.frame(read.csv("data/2005-2007cdc-report-heart-disease-and-risk-factors.csv", header=TRUE))
+r.total.07.09 <- as.data.frame(read.csv("data/2007-2009-cdc-report-heart-disease-and-risk-factors.csv", header=TRUE))
+r.total.09.11 <- as.data.frame(read.csv("data/2009-2011-cdc-report-heart-disease-and-risk-factors.csv", header=TRUE))
+r.total.11.13 <- as.data.frame(read.csv("data/2011-2013-cdc-report-heart-disease-and-risk-factors.csv", header=TRUE))
+r.total.13.15 <- as.data.frame(read.csv("data/2013-2015-cdc-report-heart-disease-and-risk-factors.csv"))
+#Check to see how the Counties are label in datasets so we can start working on them
+head(counties)
+```
+
+```
+##        long      lat group order  region subregion
+## 1 -86.50517 32.34920     1     1 alabama   autauga
+## 2 -86.53382 32.35493     1     2 alabama   autauga
+## 3 -86.54527 32.36639     1     3 alabama   autauga
+## 4 -86.55673 32.37785     1     4 alabama   autauga
+## 5 -86.57966 32.38357     1     5 alabama   autauga
+## 6 -86.59111 32.37785     1     6 alabama   autauga
+```
+
+```r
+head(r.total.05.07)
+```
+
+```
+##   cnty_fips    display_name Value         theme_range dm_prev_adj
+## 1      1001 "Autauga, (AL)" 734.7 639.7 - 989.4 (643)        11.4
+## 2      1003 "Baldwin, (AL)" 586.7 571.5 - 639.6 (642)         9.3
+## 3      1005 "Barbour, (AL)" 691.3 639.7 - 989.4 (643)        16.5
+## 4      1007    "Bibb, (AL)" 704.3 639.7 - 989.4 (643)        13.5
+## 5      1009  "Blount, (AL)" 668.5 639.7 - 989.4 (643)        12.5
+## 6      1011 "Bullock, (AL)" 788.0 639.7 - 989.4 (643)        18.0
+##   ob_prev_adj ltpia_prev_adj
+## 1        36.3           30.3
+## 2        29.4           23.5
+## 3        44.5           29.9
+## 4        38.5           36.7
+## 5        36.1           28.0
+## 6        40.1           29.3
+```
+
+So, there are several things that we need to change. First, we need to change column names from `display_name` to `subregion`. Second, we need to remove `, (state)` from the *county* name. Third, we need to make the *county* name to be all lower case.
+
+
+```r
+# Gonna do the 05-07 first to see how it goes. After that do the rest
+total.05.07 <- select(r.total.05.07, display_name, 
+                      Value,dm_prev_adj, 
+                      ob_prev_adj,ltpia_prev_adj) %>% 
+               rename(subregion=display_name, deathavg=Value,
+                      diabetes=dm_prev_adj,obesity=ob_prev_adj,
+                      exercise=ltpia_prev_adj)
+```
+
