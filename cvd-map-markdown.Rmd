@@ -18,8 +18,37 @@ Heart disease is the leading cause of death in the USA, accounting for approxima
 ## Prerequisites
 
 To perform these maps, you will need to have several extra packages. I'm not going into how to install them, but a quick google search should tell you how to. The main libraries that we will need are:
-1. [tidyverse](https://www.tidyverse.org/): this is a package created by Hadley Wickham. This "umbrella" package was designed to make data science analysis and visualition faster and easier. The main packages that we will use in this analysis are: [dplyr](http://dplyr.tidyverse.org/), and [ggplot2](http://ggplot2.tidyverse.org/)
 
+1. [tidyverse](https://www.tidyverse.org/): this is a package created by Hadley Wickham. This "umbrella" package was designed to make data science analysis and visualition faster and easier. The main packages that we will use in this analysis are:
+    + [dplyr](http://dplyr.tidyverse.org/): grammar of data manipulation, i.e. how to import, select, filter, and arrange your data for analysis;
+    + [ggplot2](http://ggplot2.tidyverse.org/): system for declaratively creating graphics, i.e. you provide the data, tell it how to map, and it takes care of details;
+    + [stringr](http://stringr.tidyverse.org/): provides a set of functions designed to make working with strings as easy as possible.
+2. [maps](https://cran.r-project.org/web/packages/maps/README.html): package for displaying maps;
+3. [mapdata](https://www.rdocumentation.org/packages/mapdata/versions/2.2-6): supplements the `maps` package, providing some larger and/or higher-resolution databases.
+4. [ggmap](https://github.com/dkahle/ggmap): package to retrieve [raster map tiles](https://en.wikipedia.org/wiki/Tiled_web_map) (map displayed by joining dozens of individually requested image files over the internet) from popular online mapping service like Google Maps, and others.
 
+## Load the libraries
+```{r loading-packages}
+library(ggplot2)
+library(ggmap)
+library(maps)
+library(mapdata)
+```
+
+## Plotting the maps
+
+Although the `maps` package is able to plot, we will use `ggplot2` to actually plot. For that, we will need to do some transformations in the data since `ggplot2` operates on data frames.
+
+```{r plot-map}
+usa <- map_data("usa")
+dim(usa)
+head(usa)
+tail(usa)
+# Just as an exercise will plot the USA map to define one parameter
+ggplot() + geom_polygon(data=usa, aes(x=long, y=lat, group=group)) +
+  coord_fixed(1.3)
+```
+
+That turned out pretty nice. The `coord_fixed()` function is very important when drawing maps. It "forces" a specific ration between the x and y axis. In our example, I asked for each *y* unit to be 1.3*x* unit. Why this is important? Because if we decide to change the size of file that we are saving, it knows the ratios and it will change accordingly, instead of potentially altering the ratios that we will use.
 
 
