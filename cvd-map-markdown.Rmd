@@ -88,16 +88,58 @@ head(r.total.05.07)
 
 So, there are several things that we need to change. First, we need to change column names from `display_name` to `subregion`. Second, we need to remove `, (state)` from the *county* name. Third, we need to make the *county* name to be all lower case.
 
+I will start with the `05-07` dataset first, to do trial and error. After that, I will repeat for the other years. 
+
 ```{r}
 # Gonna do the 05-07 first to see how it goes. After that do the rest
-total.05.07 <- select(r.total.05.07, display_name, 
+r.total.05.07$subregion <- str_extract(r.total.05.07$display_name, 
+                                     '[a-zA-Z]+') %>%
+                         tolower()
+total.05.07 <- select(r.total.05.07, subregion, 
                       Value,dm_prev_adj, 
                       ob_prev_adj,ltpia_prev_adj) %>% 
-               rename(subregion=display_name, deathavg=Value,
+               rename(deathavg=Value,
                       diabetes=dm_prev_adj,obesity=ob_prev_adj,
-                      exercise=ltpia_prev_adj)
-
-
-
+                      exercise=ltpia_prev_adj) %>%
+               as.data.frame(stringAsFactors=FALSE)
+head(total.05.07)
+head(counties)
 ```
+
+That looks promising. We now have the numbers that we want, all we need is to join the tables together.
+
+```{r join-county05-07}
+#we can also remove the raw 05-07 dataset to "clear" our environment as well
+rm(r.total.05.07)
+counties0507 <- inner_join(counties, total.05.07, by="subregion")
+head(counties0507)
+```
+
+Ok, now we are finally ready to plot the mortality rates
+
+```{r test-plot}
+ditch_the_axes <- theme(
+  axis.text = element_blank(),
+  axis.line = element_blank(),
+  axis.ticks = element_blank(),
+  panel.border = element_blank(),
+  panel.grid = element_blank(),
+  axis.title = element_blank()
+  )
+
+counties_base <- ggplot(data = counties, mapping = 
+                          aes(x = long, y = lat, group = group)) + 
+                        coord_fixed(1.3) + 
+                        geom_polygon(color = "black", fill = "gray")
+counties_base
+
+testing0507 <- counties_base + 
+      geom_polygon(data = counties0507, aes(fill = deathavg), color="white")+
+      geom_polygon(color = "black", fill = NA) +
+      theme_bw() +
+      ditch_the_axes
+testing0507
+```
+
+
 

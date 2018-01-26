@@ -30,17 +30,6 @@ To perform these maps, you will need to have several extra packages. I'm not goi
 ```r
 library(ggplot2)
 library(ggmap)
-```
-
-```
-## Google Maps API Terms of Service: http://developers.google.com/maps/terms.
-```
-
-```
-## Please cite ggmap if you use it: see citation("ggmap") for details.
-```
-
-```r
 library(maps)
 library(mapdata)
 library(dplyr)
@@ -221,14 +210,107 @@ head(r.total.05.07)
 
 So, there are several things that we need to change. First, we need to change column names from `display_name` to `subregion`. Second, we need to remove `, (state)` from the *county* name. Third, we need to make the *county* name to be all lower case.
 
+I will start with the `05-07` dataset first, to do trial and error. After that, I will repeat for the other years. 
+
 
 ```r
 # Gonna do the 05-07 first to see how it goes. After that do the rest
-total.05.07 <- select(r.total.05.07, display_name, 
+r.total.05.07$subregion <- str_extract(r.total.05.07$display_name, 
+                                     '[a-zA-Z]+') %>%
+                         tolower()
+total.05.07 <- select(r.total.05.07, subregion, 
                       Value,dm_prev_adj, 
                       ob_prev_adj,ltpia_prev_adj) %>% 
-               rename(subregion=display_name, deathavg=Value,
+               rename(deathavg=Value,
                       diabetes=dm_prev_adj,obesity=ob_prev_adj,
-                      exercise=ltpia_prev_adj)
+                      exercise=ltpia_prev_adj) %>%
+               as.data.frame(stringAsFactors=FALSE)
+head(total.05.07)
 ```
+
+```
+##   subregion deathavg diabetes obesity exercise
+## 1   autauga    734.7     11.4    36.3     30.3
+## 2   baldwin    586.7      9.3    29.4     23.5
+## 3   barbour    691.3     16.5    44.5     29.9
+## 4      bibb    704.3     13.5    38.5     36.7
+## 5    blount    668.5     12.5    36.1     28.0
+## 6   bullock    788.0     18.0    40.1     29.3
+```
+
+```r
+head(counties)
+```
+
+```
+##        long      lat group order  region subregion
+## 1 -86.50517 32.34920     1     1 alabama   autauga
+## 2 -86.53382 32.35493     1     2 alabama   autauga
+## 3 -86.54527 32.36639     1     3 alabama   autauga
+## 4 -86.55673 32.37785     1     4 alabama   autauga
+## 5 -86.57966 32.38357     1     5 alabama   autauga
+## 6 -86.59111 32.37785     1     6 alabama   autauga
+```
+
+That looks promising. We now have the numbers that we want, all we need is to join the tables together.
+
+
+```r
+#we can also remove the raw 05-07 dataset to "clear" our environment as well
+rm(r.total.05.07)
+counties0507 <- inner_join(counties, total.05.07, by="subregion")
+head(counties0507)
+```
+
+```
+##        long      lat group order  region subregion deathavg diabetes
+## 1 -86.50517 32.34920     1     1 alabama   autauga    734.7     11.4
+## 2 -86.53382 32.35493     1     2 alabama   autauga    734.7     11.4
+## 3 -86.54527 32.36639     1     3 alabama   autauga    734.7     11.4
+## 4 -86.55673 32.37785     1     4 alabama   autauga    734.7     11.4
+## 5 -86.57966 32.38357     1     5 alabama   autauga    734.7     11.4
+## 6 -86.59111 32.37785     1     6 alabama   autauga    734.7     11.4
+##   obesity exercise
+## 1    36.3     30.3
+## 2    36.3     30.3
+## 3    36.3     30.3
+## 4    36.3     30.3
+## 5    36.3     30.3
+## 6    36.3     30.3
+```
+
+Ok, now we are finally ready to plot the mortality rates
+
+
+```r
+ditch_the_axes <- theme(
+  axis.text = element_blank(),
+  axis.line = element_blank(),
+  axis.ticks = element_blank(),
+  panel.border = element_blank(),
+  panel.grid = element_blank(),
+  axis.title = element_blank()
+  )
+
+counties_base <- ggplot(data = counties, mapping = 
+                          aes(x = long, y = lat, group = group)) + 
+                        coord_fixed(1.3) + 
+                        geom_polygon(color = "black", fill = "gray")
+counties_base
+```
+
+![](cvd-map-markdown_files/figure-html/test-plot-1.png)<!-- -->
+
+```r
+testing0507 <- counties_base + 
+      geom_polygon(data = counties0507, aes(fill = deathavg), color="white")+
+      geom_polygon(color = "black", fill = NA) +
+      theme_bw() +
+      ditch_the_axes
+testing0507
+```
+
+![](cvd-map-markdown_files/figure-html/test-plot-2.png)<!-- -->
+
+
 
