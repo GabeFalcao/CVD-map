@@ -137,7 +137,9 @@ testing0507 <- counties_base +
       geom_polygon(data = counties0507, aes(fill = deathavg), color="white")+
       geom_polygon(color = "black", fill = NA) +
       theme_bw() +
-      ditch_the_axes
+      ditch_the_axes +
+      labs(title = "Mortality Rates from CVD 2005-2007", 
+           caption = "Data from www.cdc.gov")
 testing0507
 ```
 
