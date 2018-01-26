@@ -95,13 +95,15 @@ I will start with the `05-07` dataset first, to do trial and error. After that, 
 r.total.05.07$subregion <- str_extract(r.total.05.07$display_name, 
                                      '[a-zA-Z]+') %>%
                          tolower()
+r.total.05.07$deathavg <- replace(r.total.05.07$Value, r.total.05.07$Value<0, NA)
+r.total.05.07$diabetes <- replace(r.total.05.07$dm_prev_adj, r.total.05.07$dm_prev_adj<0, NA)
+r.total.05.07$obesity <- replace(r.total.05.07$ob_prev_adj, r.total.05.07$ob_prev_adj<0, NA)
+r.total.05.07$exercise <- replace(r.total.05.07$ltpia_prev_adj, r.total.05.07$ltpia_prev_adj<0, NA)
+
 total.05.07 <- select(r.total.05.07, subregion, 
-                      Value,dm_prev_adj, 
-                      ob_prev_adj,ltpia_prev_adj) %>% 
-               rename(deathavg=Value,
-                      diabetes=dm_prev_adj,obesity=ob_prev_adj,
-                      exercise=ltpia_prev_adj) %>%
-               as.data.frame(stringAsFactors=FALSE)
+                      deathavg,diabetes, 
+                      ob_prev_adj,exercise) %>%
+                      as.data.frame(stringAsFactors=FALSE)
 head(total.05.07)
 head(counties)
 ```
@@ -141,6 +143,8 @@ testing0507 <- counties_base +
       labs(title = "Mortality Rates from CVD 2005-2007", 
            caption = "Data from www.cdc.gov")
 testing0507
+testing0507.1 <- testing0507 + scale_fill_gradient(trans = "log10")
+testing0507.1
 ```
 
 

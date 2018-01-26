@@ -218,24 +218,26 @@ I will start with the `05-07` dataset first, to do trial and error. After that, 
 r.total.05.07$subregion <- str_extract(r.total.05.07$display_name, 
                                      '[a-zA-Z]+') %>%
                          tolower()
+r.total.05.07$deathavg <- replace(r.total.05.07$Value, r.total.05.07$Value<0, NA)
+r.total.05.07$diabetes <- replace(r.total.05.07$dm_prev_adj, r.total.05.07$dm_prev_adj<0, NA)
+r.total.05.07$obesity <- replace(r.total.05.07$ob_prev_adj, r.total.05.07$ob_prev_adj<0, NA)
+r.total.05.07$exercise <- replace(r.total.05.07$ltpia_prev_adj, r.total.05.07$ltpia_prev_adj<0, NA)
+
 total.05.07 <- select(r.total.05.07, subregion, 
-                      Value,dm_prev_adj, 
-                      ob_prev_adj,ltpia_prev_adj) %>% 
-               rename(deathavg=Value,
-                      diabetes=dm_prev_adj,obesity=ob_prev_adj,
-                      exercise=ltpia_prev_adj) %>%
-               as.data.frame(stringAsFactors=FALSE)
+                      deathavg,diabetes, 
+                      ob_prev_adj,exercise) %>%
+                      as.data.frame(stringAsFactors=FALSE)
 head(total.05.07)
 ```
 
 ```
-##   subregion deathavg diabetes obesity exercise
-## 1   autauga    734.7     11.4    36.3     30.3
-## 2   baldwin    586.7      9.3    29.4     23.5
-## 3   barbour    691.3     16.5    44.5     29.9
-## 4      bibb    704.3     13.5    38.5     36.7
-## 5    blount    668.5     12.5    36.1     28.0
-## 6   bullock    788.0     18.0    40.1     29.3
+##   subregion deathavg diabetes ob_prev_adj exercise
+## 1   autauga    734.7     11.4        36.3     30.3
+## 2   baldwin    586.7      9.3        29.4     23.5
+## 3   barbour    691.3     16.5        44.5     29.9
+## 4      bibb    704.3     13.5        38.5     36.7
+## 5    blount    668.5     12.5        36.1     28.0
+## 6   bullock    788.0     18.0        40.1     29.3
 ```
 
 ```r
@@ -270,13 +272,13 @@ head(counties0507)
 ## 4 -86.55673 32.37785     1     4 alabama   autauga    734.7     11.4
 ## 5 -86.57966 32.38357     1     5 alabama   autauga    734.7     11.4
 ## 6 -86.59111 32.37785     1     6 alabama   autauga    734.7     11.4
-##   obesity exercise
-## 1    36.3     30.3
-## 2    36.3     30.3
-## 3    36.3     30.3
-## 4    36.3     30.3
-## 5    36.3     30.3
-## 6    36.3     30.3
+##   ob_prev_adj exercise
+## 1        36.3     30.3
+## 2        36.3     30.3
+## 3        36.3     30.3
+## 4        36.3     30.3
+## 5        36.3     30.3
+## 6        36.3     30.3
 ```
 
 Ok, now we are finally ready to plot the mortality rates
@@ -306,11 +308,20 @@ testing0507 <- counties_base +
       geom_polygon(data = counties0507, aes(fill = deathavg), color="white")+
       geom_polygon(color = "black", fill = NA) +
       theme_bw() +
-      ditch_the_axes
+      ditch_the_axes +
+      labs(title = "Mortality Rates from CVD 2005-2007", 
+           caption = "Data from www.cdc.gov")
 testing0507
 ```
 
 ![](cvd-map-markdown_files/figure-html/test-plot-2.png)<!-- -->
+
+```r
+testing0507.1 <- testing0507 + scale_fill_gradient(trans = "log10")
+testing0507.1
+```
+
+![](cvd-map-markdown_files/figure-html/test-plot-3.png)<!-- -->
 
 
 
