@@ -157,7 +157,7 @@ testing0507
 ```
 
 ```{r}
-# Gonna do the 05-07 first to see how it goes. After that do the rest
+# 2007-2009 done
 r.total.07.09$subregion <- str_extract(r.total.07.09$display_name, 
                                      '[a-zA-Z]+') %>%
                          tolower()
@@ -181,3 +181,124 @@ counties0709$brk <- cut(counties0709$deathavg,
                       include.lowest=TRUE)
 ```
 
+```{r}
+testing0709 <- counties_base + 
+      geom_polygon(data = counties0709, aes(fill = brk), color="white")+
+      geom_polygon(color = "black", fill = NA) +
+      theme_bw() +
+      ditch_the_axes +
+      labs(title = "Mortality Rates from CVD 2007-2009", 
+           caption = "Data from www.cdc.gov")
+testing0709
+```
+
+```{r}
+# 2009-2011 done
+r.total.09.11$subregion <- str_extract(r.total.09.11$display_name, 
+                                     '[a-zA-Z]+') %>%
+                         tolower()
+r.total.09.11$deathavg <- replace(r.total.09.11$Value, r.total.09.11$Value<0, NA)
+r.total.09.11$diabetes <- replace(r.total.09.11$dm_prev_adj, r.total.09.11$dm_prev_adj<0, NA)
+r.total.09.11$obesity <- replace(r.total.09.11$ob_prev_adj, r.total.09.11$ob_prev_adj<0, NA)
+r.total.09.11$exercise <- replace(r.total.09.11$ltpia_prev_adj, r.total.09.11$ltpia_prev_adj<0, NA)
+
+total.09.11 <- select(r.total.09.11, subregion, 
+                      deathavg,diabetes, 
+                      ob_prev_adj,exercise) %>%
+                      as.data.frame(stringAsFactors=FALSE)
+head(total.09.11)
+head(counties)
+rm(r.total.09.11)
+counties0911 <- inner_join(counties, total.09.11, by="subregion")
+head(counties0911)
+counties0911$brk <- cut(counties0911$deathavg, 
+                      breaks=c(0, 160, 400, 460, 580, 1000000), 
+                      labels=c("0-160", "160-400", "400-460", "460-580", "580+"),
+                      include.lowest=TRUE)
+```
+
+```{r}
+testing0911 <- counties_base + 
+      geom_polygon(data = counties0911, aes(fill = brk), color="white")+
+      geom_polygon(color = "black", fill = NA) +
+      theme_bw() +
+      ditch_the_axes +
+      labs(title = "Mortality Rates from CVD 2009-2011", 
+           caption = "Data from www.cdc.gov")
+testing0911
+```
+
+
+```{r}
+# 2011-2013 done
+r.total.11.13$subregion <- str_extract(r.total.11.13$display_name, 
+                                     '[a-zA-Z]+') %>%
+                         tolower()
+r.total.11.13$deathavg <- replace(r.total.11.13$Value, r.total.11.13$Value<0, NA)
+r.total.11.13$diabetes <- replace(r.total.11.13$dm_prev_adj, r.total.11.13$dm_prev_adj<0, NA)
+r.total.11.13$obesity <- replace(r.total.11.13$ob_prev_adj, r.total.11.13$ob_prev_adj<0, NA)
+r.total.11.13$exercise <- replace(r.total.11.13$ltpia_prev_adj, r.total.11.13$ltpia_prev_adj<0, NA)
+
+total.11.13 <- select(r.total.11.13, subregion, 
+                      deathavg,diabetes, 
+                      ob_prev_adj,exercise) %>%
+                      as.data.frame(stringAsFactors=FALSE)
+head(total.11.13)
+head(counties)
+rm(r.total.11.13)
+counties1113 <- inner_join(counties, total.11.13, by="subregion")
+head(counties1113)
+counties1113$brk <- cut(counties1113$deathavg, 
+                      breaks=c(0, 160, 400, 460, 580, 1000000), 
+                      labels=c("0-160", "160-400", "400-460", "460-580", "580+"),
+                      include.lowest=TRUE)
+```
+
+```{r}
+testing1113 <- counties_base + 
+      geom_polygon(data = counties1113, aes(fill = brk), color="white")+
+      geom_polygon(color = "black", fill = NA) +
+      theme_bw() +
+      ditch_the_axes +
+      labs(title = "Mortality Rates from CVD 2011-2013", 
+           caption = "Data from www.cdc.gov")
+testing1113
+```
+
+
+
+```{r}
+# 2013-2015 done
+r.total.13.15$subregion <- str_extract(r.total.13.15$display_name, 
+                                     '[a-zA-Z]+') %>%
+                         tolower()
+r.total.13.15$deathavg <- replace(r.total.13.15$Value, r.total.13.15$Value<0, NA)
+r.total.13.15$diabetes <- replace(r.total.13.15$dm_prev_adj, r.total.13.15$dm_prev_adj<0, NA)
+r.total.13.15$obesity <- replace(r.total.13.15$ob_prev_adj, r.total.13.15$ob_prev_adj<0, NA)
+r.total.13.15$exercise <- replace(r.total.13.15$ltpia_prev_adj, r.total.13.15$ltpia_prev_adj<0, NA)
+
+total.13.15 <- select(r.total.13.15, subregion, 
+                      deathavg,diabetes, 
+                      ob_prev_adj,exercise) %>%
+                      as.data.frame(stringAsFactors=FALSE)
+head(total.13.15)
+head(counties)
+rm(r.total.13.15)
+counties1315 <- inner_join(counties, total.13.15, by="subregion")
+head(counties1315)
+counties1315$brk <- cut(counties1315$deathavg, 
+                      breaks=c(0, 160, 400, 460, 580, 1000000), 
+                      labels=c("0-160", "160-400", "400-460", "460-580", "580+"),
+                      include.lowest=TRUE)
+```
+
+```{r}
+testing1315 <- counties_base + 
+      geom_polygon(data = counties1315, aes(fill = brk), color="white")+
+      geom_polygon(color = "black", fill = NA) +
+      theme_bw() +
+      ditch_the_axes +
+      labs(title = "Mortality Rates from CVD 2013-2015", 
+           caption = "Data from www.cdc.gov")
+testing1315
+```

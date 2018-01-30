@@ -281,6 +281,29 @@ head(counties0507)
 ## 6        36.3     30.3
 ```
 
+```r
+counties0507$brk <- cut(counties0507$deathavg, 
+                      breaks=c(0, 160, 400, 460, 580, 1000000), 
+                      labels=c("0-160", "160-400", "400-460", "460-580", "580+"),
+                      include.lowest=TRUE)
+```
+
+```r
+qplot(total.05.07$deathavg, geom="histogram")
+```
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+```
+## Warning: Removed 10 rows containing non-finite values (stat_bin).
+```
+
+![](cvd-map-markdown_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+
+
 Ok, now we are finally ready to plot the mortality rates
 
 
@@ -294,6 +317,7 @@ ditch_the_axes <- theme(
   axis.title = element_blank()
   )
 
+
 counties_base <- ggplot(data = counties, mapping = 
                           aes(x = long, y = lat, group = group)) + 
                         coord_fixed(1.3) + 
@@ -305,7 +329,7 @@ counties_base
 
 ```r
 testing0507 <- counties_base + 
-      geom_polygon(data = counties0507, aes(fill = deathavg), color="white")+
+      geom_polygon(data = counties0507, aes(fill = brk), color="white")+
       geom_polygon(color = "black", fill = NA) +
       theme_bw() +
       ditch_the_axes +
@@ -316,12 +340,349 @@ testing0507
 
 ![](cvd-map-markdown_files/figure-html/test-plot-2.png)<!-- -->
 
+
 ```r
-testing0507.1 <- testing0507 + scale_fill_gradient(trans = "log10")
-testing0507.1
+# 2007-2009 done
+r.total.07.09$subregion <- str_extract(r.total.07.09$display_name, 
+                                     '[a-zA-Z]+') %>%
+                         tolower()
+r.total.07.09$deathavg <- replace(r.total.07.09$Value, r.total.07.09$Value<0, NA)
+r.total.07.09$diabetes <- replace(r.total.07.09$dm_prev_adj, r.total.07.09$dm_prev_adj<0, NA)
+r.total.07.09$obesity <- replace(r.total.07.09$ob_prev_adj, r.total.07.09$ob_prev_adj<0, NA)
+r.total.07.09$exercise <- replace(r.total.07.09$ltpia_prev_adj, r.total.07.09$ltpia_prev_adj<0, NA)
+
+total.07.09 <- select(r.total.07.09, subregion, 
+                      deathavg,diabetes, 
+                      ob_prev_adj,exercise) %>%
+                      as.data.frame(stringAsFactors=FALSE)
+head(total.07.09)
 ```
 
-![](cvd-map-markdown_files/figure-html/test-plot-3.png)<!-- -->
+```
+##   subregion deathavg diabetes ob_prev_adj exercise
+## 1   autauga    631.3     11.4        36.3     30.3
+## 2   baldwin    531.8      9.3        29.4     23.5
+## 3   barbour    638.0     16.5        44.5     29.9
+## 4      bibb    645.9     13.5        38.5     36.7
+## 5    blount    619.9     12.5        36.1     28.0
+## 6   bullock    666.7     18.0        40.1     29.3
+```
+
+```r
+head(counties)
+```
+
+```
+##        long      lat group order  region subregion
+## 1 -86.50517 32.34920     1     1 alabama   autauga
+## 2 -86.53382 32.35493     1     2 alabama   autauga
+## 3 -86.54527 32.36639     1     3 alabama   autauga
+## 4 -86.55673 32.37785     1     4 alabama   autauga
+## 5 -86.57966 32.38357     1     5 alabama   autauga
+## 6 -86.59111 32.37785     1     6 alabama   autauga
+```
+
+```r
+rm(r.total.07.09)
+counties0709 <- inner_join(counties, total.07.09, by="subregion")
+head(counties0709)
+```
+
+```
+##        long      lat group order  region subregion deathavg diabetes
+## 1 -86.50517 32.34920     1     1 alabama   autauga    631.3     11.4
+## 2 -86.53382 32.35493     1     2 alabama   autauga    631.3     11.4
+## 3 -86.54527 32.36639     1     3 alabama   autauga    631.3     11.4
+## 4 -86.55673 32.37785     1     4 alabama   autauga    631.3     11.4
+## 5 -86.57966 32.38357     1     5 alabama   autauga    631.3     11.4
+## 6 -86.59111 32.37785     1     6 alabama   autauga    631.3     11.4
+##   ob_prev_adj exercise
+## 1        36.3     30.3
+## 2        36.3     30.3
+## 3        36.3     30.3
+## 4        36.3     30.3
+## 5        36.3     30.3
+## 6        36.3     30.3
+```
+
+```r
+counties0709$brk <- cut(counties0709$deathavg, 
+                      breaks=c(0, 160, 400, 460, 580, 1000000), 
+                      labels=c("0-160", "160-400", "400-460", "460-580", "580+"),
+                      include.lowest=TRUE)
+```
+
+
+```r
+testing0709 <- counties_base + 
+      geom_polygon(data = counties0709, aes(fill = brk), color="white")+
+      geom_polygon(color = "black", fill = NA) +
+      theme_bw() +
+      ditch_the_axes +
+      labs(title = "Mortality Rates from CVD 2007-2009", 
+           caption = "Data from www.cdc.gov")
+testing0709
+```
+
+![](cvd-map-markdown_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+
+```r
+# 2009-2011 done
+r.total.09.11$subregion <- str_extract(r.total.09.11$display_name, 
+                                     '[a-zA-Z]+') %>%
+                         tolower()
+r.total.09.11$deathavg <- replace(r.total.09.11$Value, r.total.09.11$Value<0, NA)
+r.total.09.11$diabetes <- replace(r.total.09.11$dm_prev_adj, r.total.09.11$dm_prev_adj<0, NA)
+r.total.09.11$obesity <- replace(r.total.09.11$ob_prev_adj, r.total.09.11$ob_prev_adj<0, NA)
+r.total.09.11$exercise <- replace(r.total.09.11$ltpia_prev_adj, r.total.09.11$ltpia_prev_adj<0, NA)
+
+total.09.11 <- select(r.total.09.11, subregion, 
+                      deathavg,diabetes, 
+                      ob_prev_adj,exercise) %>%
+                      as.data.frame(stringAsFactors=FALSE)
+head(total.09.11)
+```
+
+```
+##   subregion deathavg diabetes ob_prev_adj exercise
+## 1   autauga    617.0     11.4        36.3     30.3
+## 2   baldwin    536.7      9.3        29.4     23.5
+## 3   barbour    721.8     16.5        44.5     29.9
+## 4      bibb    650.7     13.5        38.5     36.7
+## 5    blount    582.1     12.5        36.1     28.0
+## 6   bullock    670.4     18.0        40.1     29.3
+```
+
+```r
+head(counties)
+```
+
+```
+##        long      lat group order  region subregion
+## 1 -86.50517 32.34920     1     1 alabama   autauga
+## 2 -86.53382 32.35493     1     2 alabama   autauga
+## 3 -86.54527 32.36639     1     3 alabama   autauga
+## 4 -86.55673 32.37785     1     4 alabama   autauga
+## 5 -86.57966 32.38357     1     5 alabama   autauga
+## 6 -86.59111 32.37785     1     6 alabama   autauga
+```
+
+```r
+rm(r.total.09.11)
+counties0911 <- inner_join(counties, total.09.11, by="subregion")
+head(counties0911)
+```
+
+```
+##        long      lat group order  region subregion deathavg diabetes
+## 1 -86.50517 32.34920     1     1 alabama   autauga      617     11.4
+## 2 -86.53382 32.35493     1     2 alabama   autauga      617     11.4
+## 3 -86.54527 32.36639     1     3 alabama   autauga      617     11.4
+## 4 -86.55673 32.37785     1     4 alabama   autauga      617     11.4
+## 5 -86.57966 32.38357     1     5 alabama   autauga      617     11.4
+## 6 -86.59111 32.37785     1     6 alabama   autauga      617     11.4
+##   ob_prev_adj exercise
+## 1        36.3     30.3
+## 2        36.3     30.3
+## 3        36.3     30.3
+## 4        36.3     30.3
+## 5        36.3     30.3
+## 6        36.3     30.3
+```
+
+```r
+counties0911$brk <- cut(counties0911$deathavg, 
+                      breaks=c(0, 160, 400, 460, 580, 1000000), 
+                      labels=c("0-160", "160-400", "400-460", "460-580", "580+"),
+                      include.lowest=TRUE)
+```
+
+
+```r
+testing0911 <- counties_base + 
+      geom_polygon(data = counties0911, aes(fill = brk), color="white")+
+      geom_polygon(color = "black", fill = NA) +
+      theme_bw() +
+      ditch_the_axes +
+      labs(title = "Mortality Rates from CVD 2009-2011", 
+           caption = "Data from www.cdc.gov")
+testing0911
+```
+
+![](cvd-map-markdown_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 
 
+```r
+# 2011-2013 done
+r.total.11.13$subregion <- str_extract(r.total.11.13$display_name, 
+                                     '[a-zA-Z]+') %>%
+                         tolower()
+r.total.11.13$deathavg <- replace(r.total.11.13$Value, r.total.11.13$Value<0, NA)
+r.total.11.13$diabetes <- replace(r.total.11.13$dm_prev_adj, r.total.11.13$dm_prev_adj<0, NA)
+r.total.11.13$obesity <- replace(r.total.11.13$ob_prev_adj, r.total.11.13$ob_prev_adj<0, NA)
+r.total.11.13$exercise <- replace(r.total.11.13$ltpia_prev_adj, r.total.11.13$ltpia_prev_adj<0, NA)
+
+total.11.13 <- select(r.total.11.13, subregion, 
+                      deathavg,diabetes, 
+                      ob_prev_adj,exercise) %>%
+                      as.data.frame(stringAsFactors=FALSE)
+head(total.11.13)
+```
+
+```
+##   subregion deathavg diabetes ob_prev_adj exercise
+## 1   autauga    625.6     11.4        36.3     30.3
+## 2   baldwin    512.3      9.3        29.4     23.5
+## 3   barbour    642.1     16.5        44.5     29.9
+## 4      bibb    686.3     13.5        38.5     36.7
+## 5    blount    521.6     12.5        36.1     28.0
+## 6   bullock    598.3     18.0        40.1     29.3
+```
+
+```r
+head(counties)
+```
+
+```
+##        long      lat group order  region subregion
+## 1 -86.50517 32.34920     1     1 alabama   autauga
+## 2 -86.53382 32.35493     1     2 alabama   autauga
+## 3 -86.54527 32.36639     1     3 alabama   autauga
+## 4 -86.55673 32.37785     1     4 alabama   autauga
+## 5 -86.57966 32.38357     1     5 alabama   autauga
+## 6 -86.59111 32.37785     1     6 alabama   autauga
+```
+
+```r
+rm(r.total.11.13)
+counties1113 <- inner_join(counties, total.11.13, by="subregion")
+head(counties1113)
+```
+
+```
+##        long      lat group order  region subregion deathavg diabetes
+## 1 -86.50517 32.34920     1     1 alabama   autauga    625.6     11.4
+## 2 -86.53382 32.35493     1     2 alabama   autauga    625.6     11.4
+## 3 -86.54527 32.36639     1     3 alabama   autauga    625.6     11.4
+## 4 -86.55673 32.37785     1     4 alabama   autauga    625.6     11.4
+## 5 -86.57966 32.38357     1     5 alabama   autauga    625.6     11.4
+## 6 -86.59111 32.37785     1     6 alabama   autauga    625.6     11.4
+##   ob_prev_adj exercise
+## 1        36.3     30.3
+## 2        36.3     30.3
+## 3        36.3     30.3
+## 4        36.3     30.3
+## 5        36.3     30.3
+## 6        36.3     30.3
+```
+
+```r
+counties1113$brk <- cut(counties1113$deathavg, 
+                      breaks=c(0, 160, 400, 460, 580, 1000000), 
+                      labels=c("0-160", "160-400", "400-460", "460-580", "580+"),
+                      include.lowest=TRUE)
+```
+
+
+```r
+testing1113 <- counties_base + 
+      geom_polygon(data = counties1113, aes(fill = brk), color="white")+
+      geom_polygon(color = "black", fill = NA) +
+      theme_bw() +
+      ditch_the_axes +
+      labs(title = "Mortality Rates from CVD 2011-2013", 
+           caption = "Data from www.cdc.gov")
+testing1113
+```
+
+![](cvd-map-markdown_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
+
+
+
+```r
+# 2013-2015 done
+r.total.13.15$subregion <- str_extract(r.total.13.15$display_name, 
+                                     '[a-zA-Z]+') %>%
+                         tolower()
+r.total.13.15$deathavg <- replace(r.total.13.15$Value, r.total.13.15$Value<0, NA)
+r.total.13.15$diabetes <- replace(r.total.13.15$dm_prev_adj, r.total.13.15$dm_prev_adj<0, NA)
+r.total.13.15$obesity <- replace(r.total.13.15$ob_prev_adj, r.total.13.15$ob_prev_adj<0, NA)
+r.total.13.15$exercise <- replace(r.total.13.15$ltpia_prev_adj, r.total.13.15$ltpia_prev_adj<0, NA)
+
+total.13.15 <- select(r.total.13.15, subregion, 
+                      deathavg,diabetes, 
+                      ob_prev_adj,exercise) %>%
+                      as.data.frame(stringAsFactors=FALSE)
+head(total.13.15)
+```
+
+```
+##   subregion deathavg diabetes ob_prev_adj exercise
+## 1   autauga    568.0     11.4        36.3     30.3
+## 2   baldwin    489.0      9.3        29.4     23.5
+## 3   barbour    598.6     16.5        44.5     29.9
+## 4      bibb    597.8     13.5        38.5     36.7
+## 5    blount    511.4     12.5        36.1     28.0
+## 6   bullock    562.0     18.0        40.1     29.3
+```
+
+```r
+head(counties)
+```
+
+```
+##        long      lat group order  region subregion
+## 1 -86.50517 32.34920     1     1 alabama   autauga
+## 2 -86.53382 32.35493     1     2 alabama   autauga
+## 3 -86.54527 32.36639     1     3 alabama   autauga
+## 4 -86.55673 32.37785     1     4 alabama   autauga
+## 5 -86.57966 32.38357     1     5 alabama   autauga
+## 6 -86.59111 32.37785     1     6 alabama   autauga
+```
+
+```r
+rm(r.total.13.15)
+counties1315 <- inner_join(counties, total.13.15, by="subregion")
+head(counties1315)
+```
+
+```
+##        long      lat group order  region subregion deathavg diabetes
+## 1 -86.50517 32.34920     1     1 alabama   autauga      568     11.4
+## 2 -86.53382 32.35493     1     2 alabama   autauga      568     11.4
+## 3 -86.54527 32.36639     1     3 alabama   autauga      568     11.4
+## 4 -86.55673 32.37785     1     4 alabama   autauga      568     11.4
+## 5 -86.57966 32.38357     1     5 alabama   autauga      568     11.4
+## 6 -86.59111 32.37785     1     6 alabama   autauga      568     11.4
+##   ob_prev_adj exercise
+## 1        36.3     30.3
+## 2        36.3     30.3
+## 3        36.3     30.3
+## 4        36.3     30.3
+## 5        36.3     30.3
+## 6        36.3     30.3
+```
+
+```r
+counties1315$brk <- cut(counties1315$deathavg, 
+                      breaks=c(0, 160, 400, 460, 580, 1000000), 
+                      labels=c("0-160", "160-400", "400-460", "460-580", "580+"),
+                      include.lowest=TRUE)
+```
+
+
+```r
+testing1315 <- counties_base + 
+      geom_polygon(data = counties1315, aes(fill = brk), color="white")+
+      geom_polygon(color = "black", fill = NA) +
+      theme_bw() +
+      ditch_the_axes +
+      labs(title = "Mortality Rates from CVD 2013-2015", 
+           caption = "Data from www.cdc.gov")
+testing1315
+```
+
+![](cvd-map-markdown_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
