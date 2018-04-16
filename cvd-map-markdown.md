@@ -246,59 +246,191 @@ gg05 <- ggcounties + geom_map(data=heart05, map=cmap,
                     aes(fill=fill, map_id=fips),
                     color="#2b2b2b", size=0.05)
 gg05 <- gg05 + scale_fill_manual(values=c("#10052e","#4a126b","#a52c60","#ed6925","#f7d03c"))
-gg05 <- gg05 + labs(title="Heart Disease Deaths 2005-2007",
-                subtitle="Content source: Centers for Disease Control and Prevention",
-                caption="Data from https://www.cdc.gov/heartdisease/statistics_maps.htm")
-gg05 <- gg05 + theme_map(base_family="Arial")
-gg05 <- gg05 + theme(plot.title=element_text(face="bold", size=14, margin=margin(b=6)))
-gg05 <- gg05 + theme(plot.subtitle=element_text(size=10, margin=margin(b=-14)))
 gg05
 ```
 
-```
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-## font family not found in Windows font database
+![](cvd-map-markdown_files/figure-html/2005-1.png)<!-- -->
 
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-## font family not found in Windows font database
 
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-## font family not found in Windows font database
+```r
+# Gonna do the 05-07 first to see how it goes. After that do the rest
+heart07 <- select(r.total.07.09, cnty_fips, Value) %>%
+  rename(fips=cnty_fips, avgdeath=Value)
 
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-## font family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-## font family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-## font family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-## font family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-## font family not found in Windows font database
+heart07$avgdeath <- as.numeric(replace(heart07$avgdeath, heart07$avgdeath<0, NA))
+heart07$fill <- cut(heart07$avgdeath, c(0,300, 400, 500, 600, 2000))
+levels(heart07$fill) = c("0-299.9","300-399.1","400-499.1","500-599.1",">600")
+head(heart07)
 ```
 
 ```
-## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x
-## $y, : font family not found in Windows font database
+##    fips avgdeath      fill
+## 1 01001    631.3      >600
+## 2 01003    531.8 500-599.1
+## 3 01005    638.0      >600
+## 4 01007    645.9      >600
+## 5 01009    619.9      >600
+## 6 01011    666.7      >600
+```
 
-## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x
-## $y, : font family not found in Windows font database
+```r
+summary(heart07)
 ```
 
 ```
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-## font family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-## font family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
-## font family not found in Windows font database
+##      fips              avgdeath            fill     
+##  Length:3225        Min.   :139.6   0-299.9  :  16  
+##  Class :character   1st Qu.:438.5   300-399.1: 371  
+##  Mode  :character   Median :502.6   400-499.1:1187  
+##                     Mean   :515.5   500-599.1: 974  
+##                     3rd Qu.:579.8   >600     : 668  
+##                     Max.   :949.9   NA's     :   9  
+##                     NA's   :9
 ```
 
-![](cvd-map-markdown_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+```r
+gg07 <- ggcounties + geom_map(data=heart07, map=cmap,
+                    aes(fill=fill, map_id=fips),
+                    color="#2b2b2b", size=0.05)
+gg07 <- gg07 + scale_fill_manual(values=c("#10052e","#4a126b","#a52c60","#ed6925","#f7d03c"))
+gg07
+```
 
+![](cvd-map-markdown_files/figure-html/2007-1.png)<!-- -->
+
+```r
+heart09 <- select(r.total.09.11, cnty_fips, Value) %>%
+  rename(fips=cnty_fips, avgdeath=Value)
+
+heart09$avgdeath <- as.numeric(replace(heart09$avgdeath, heart09$avgdeath<0, NA))
+heart09$fill <- cut(heart09$avgdeath, c(0,300, 400, 500, 600, 2000))
+levels(heart09$fill) = c("0-299.9","300-399.1","400-499.1","500-599.1",">600")
+head(heart09)
+```
+
+```
+##    fips avgdeath      fill
+## 1 01001    617.0      >600
+## 2 01003    536.7 500-599.1
+## 3 01005    721.8      >600
+## 4 01007    650.7      >600
+## 5 01009    582.1 500-599.1
+## 6 01011    670.4      >600
+```
+
+```r
+summary(heart09)
+```
+
+```
+##      fips              avgdeath             fill     
+##  Length:3225        Min.   : 179.5   0-299.9  :  30  
+##  Class :character   1st Qu.: 414.9   300-399.1: 600  
+##  Mode  :character   Median : 474.7   400-499.1:1279  
+##                     Mean   : 488.1   500-599.1: 867  
+##                     3rd Qu.: 549.9   >600     : 441  
+##                     Max.   :1054.3   NA's     :   8  
+##                     NA's   :8
+```
+
+```r
+gg09 <- ggcounties + geom_map(data=heart09, map=cmap,
+                    aes(fill=fill, map_id=fips),
+                    color="#2b2b2b", size=0.05)
+gg09 <- gg09 + scale_fill_manual(values=c("#10052e","#4a126b","#a52c60","#ed6925","#f7d03c"))
+gg09
+```
+
+![](cvd-map-markdown_files/figure-html/2009-1.png)<!-- -->
+
+
+```r
+heart11 <- select(r.total.11.13, cnty_fips, Value) %>%
+  rename(fips=cnty_fips, avgdeath=Value)
+
+heart11$avgdeath <- as.numeric(replace(heart11$avgdeath, heart11$avgdeath<0, NA))
+heart11$fill <- cut(heart11$avgdeath, c(0,300, 400, 500, 600, 2000))
+levels(heart11$fill) = c("0-299.9","300-399.1","400-499.1","500-599.1",">600")
+head(heart11)
+```
+
+```
+##    fips avgdeath      fill
+## 1 01001    625.6      >600
+## 2 01003    512.3 500-599.1
+## 3 01005    642.1      >600
+## 4 01007    686.3      >600
+## 5 01009    521.6 500-599.1
+## 6 01011    598.3 500-599.1
+```
+
+```r
+summary(heart11)
+```
+
+```
+##      fips              avgdeath             fill     
+##  Length:3225        Min.   : 146.6   0-299.9  :  48  
+##  Class :character   1st Qu.: 399.1   300-399.1: 777  
+##  Mode  :character   Median : 464.0   400-499.1:1248  
+##                     Mean   : 472.0   500-599.1: 821  
+##                     3rd Qu.: 532.4   >600     : 323  
+##                     Max.   :1162.1   NA's     :   8  
+##                     NA's   :8
+```
+
+```r
+gg11 <- ggcounties + geom_map(data=heart11, map=cmap,
+                    aes(fill=fill, map_id=fips),
+                    color="#2b2b2b", size=0.05)
+gg11 <- gg11 + scale_fill_manual(values=c("#10052e","#4a126b","#a52c60","#ed6925","#f7d03c"))
+gg11
+```
+
+![](cvd-map-markdown_files/figure-html/2011-1.png)<!-- -->
+
+
+```r
+heart13 <- select(r.total.13.15, cnty_fips, Value) %>%
+  rename(fips=cnty_fips, avgdeath=Value)
+
+heart13$avgdeath <- as.numeric(replace(heart13$avgdeath, heart13$avgdeath<0, NA))
+heart13$fill <- cut(heart13$avgdeath, c(0,300, 400, 500, 600, 2000))
+levels(heart13$fill) = c("0-299.9","300-399.1","400-499.1","500-599.1",">600")
+head(heart13)
+```
+
+```
+##    fips avgdeath      fill
+## 1 01001    568.0 500-599.1
+## 2 01003    489.0 400-499.1
+## 3 01005    598.6 500-599.1
+## 4 01007    597.8 500-599.1
+## 5 01009    511.4 500-599.1
+## 6 01011    562.0 500-599.1
+```
+
+```r
+summary(heart13)
+```
+
+```
+##      fips              avgdeath             fill     
+##  Length:3225        Min.   : 147.7   0-299.9  :  83  
+##  Class :character   1st Qu.: 391.9   300-399.1: 812  
+##  Mode  :character   Median : 457.6   400-499.1:1241  
+##                     Mean   : 467.3   500-599.1: 750  
+##                     3rd Qu.: 532.7   >600     : 331  
+##                     Max.   :1132.8   NA's     :   8  
+##                     NA's   :8
+```
+
+```r
+gg13 <- ggcounties + geom_map(data=heart13, map=cmap,
+                    aes(fill=fill, map_id=fips),
+                    color="#2b2b2b", size=0.05)
+gg13 <- gg13 + scale_fill_manual(values=c("#10052e","#4a126b","#a52c60","#ed6925","#f7d03c"))
+gg13
+```
+
+![](cvd-map-markdown_files/figure-html/2013-1.png)<!-- -->

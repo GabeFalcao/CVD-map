@@ -86,7 +86,7 @@ ggcounties
 ```
 
 
-```{r}
+```{r 2005}
 gg05 <- ggcounties + geom_map(data=heart05, map=cmap,
                     aes(fill=fill, map_id=fips),
                     color="#2b2b2b", size=0.05)
@@ -94,7 +94,7 @@ gg05 <- gg05 + scale_fill_manual(values=c("#10052e","#4a126b","#a52c60","#ed6925
 gg05
 ```
 
-```{r}
+```{r 2007}
 # Gonna do the 05-07 first to see how it goes. After that do the rest
 heart07 <- select(r.total.07.09, cnty_fips, Value) %>%
   rename(fips=cnty_fips, avgdeath=Value)
@@ -110,12 +110,12 @@ gg07 <- ggcounties + geom_map(data=heart07, map=cmap,
 gg07 <- gg07 + scale_fill_manual(values=c("#10052e","#4a126b","#a52c60","#ed6925","#f7d03c"))
 gg07
 ```
-```{r}
+```{r 2009}
 heart09 <- select(r.total.09.11, cnty_fips, Value) %>%
   rename(fips=cnty_fips, avgdeath=Value)
 
 heart09$avgdeath <- as.numeric(replace(heart09$avgdeath, heart09$avgdeath<0, NA))
-heart09$fill <- cut(heart13$avgdeath, c(0,300, 400, 500, 600, 2000))
+heart09$fill <- cut(heart09$avgdeath, c(0,300, 400, 500, 600, 2000))
 levels(heart09$fill) = c("0-299.9","300-399.1","400-499.1","500-599.1",">600")
 head(heart09)
 summary(heart09)
@@ -126,12 +126,12 @@ gg09 <- gg09 + scale_fill_manual(values=c("#10052e","#4a126b","#a52c60","#ed6925
 gg09
 ```
 
-```{r}
+```{r 2011}
 heart11 <- select(r.total.11.13, cnty_fips, Value) %>%
   rename(fips=cnty_fips, avgdeath=Value)
 
 heart11$avgdeath <- as.numeric(replace(heart11$avgdeath, heart11$avgdeath<0, NA))
-heart11$fill <- cut(heart13$avgdeath, c(0,300, 400, 500, 600, 2000))
+heart11$fill <- cut(heart11$avgdeath, c(0,300, 400, 500, 600, 2000))
 levels(heart11$fill) = c("0-299.9","300-399.1","400-499.1","500-599.1",">600")
 head(heart11)
 summary(heart11)
@@ -142,7 +142,7 @@ gg11 <- gg11 + scale_fill_manual(values=c("#10052e","#4a126b","#a52c60","#ed6925
 gg11
 ```
 
-```{r}
+```{r 2013}
 heart13 <- select(r.total.13.15, cnty_fips, Value) %>%
   rename(fips=cnty_fips, avgdeath=Value)
 
