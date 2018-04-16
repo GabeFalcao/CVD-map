@@ -33,6 +33,10 @@ library(maptools)
 ```
 
 ```
+## Warning: package 'maptools' was built under R version 3.4.4
+```
+
+```
 ## Loading required package: sp
 ```
 
@@ -42,15 +46,33 @@ library(maptools)
 
 ```r
 library(ggalt)
+```
+
+```
+## Warning: package 'ggalt' was built under R version 3.4.4
+```
+
+```r
 library(ggthemes)
+```
+
+```
+## Warning: package 'ggthemes' was built under R version 3.4.4
+```
+
+```r
 library(albersusa) # devtools::install_github("hrbrmstr/albersusa")
 library(rgeos)
 ```
 
 ```
+## Warning: package 'rgeos' was built under R version 3.4.4
+```
+
+```
 ## rgeos version: 0.3-26, (SVN revision 560)
 ##  GEOS runtime version: 3.6.1-CAPI-1.10.1 r0 
-##  Linking to sp version: 1.2-5 
+##  Linking to sp version: 1.2-7 
 ##  Polygon checking: TRUE
 ```
 
@@ -59,7 +81,15 @@ library(viridis)
 ```
 
 ```
+## Warning: package 'viridis' was built under R version 3.4.4
+```
+
+```
 ## Loading required package: viridisLite
+```
+
+```
+## Warning: package 'viridisLite' was built under R version 3.4.4
 ```
 
 ```r
@@ -82,22 +112,22 @@ library(tidyverse)
 ```
 
 ```
-## ── Attaching packages ──────────────────── tidyverse 1.2.1 ──
+## -- Attaching packages -------- tidyverse 1.2.1 --
 ```
 
 ```
-## ✔ tibble  1.4.2     ✔ purrr   0.2.4
-## ✔ tidyr   0.8.0     ✔ dplyr   0.7.4
-## ✔ readr   1.1.1     ✔ stringr 1.2.0
-## ✔ tibble  1.4.2     ✔ forcats 0.2.0
+## v tibble  1.4.2     v purrr   0.2.4
+## v tidyr   0.8.0     v dplyr   0.7.4
+## v readr   1.1.1     v stringr 1.2.0
+## v tibble  1.4.2     v forcats 0.2.0
 ```
 
 ```
-## ── Conflicts ─────────────────────── tidyverse_conflicts() ──
-## ✖ readr::col_factor() masks scales::col_factor()
-## ✖ purrr::discard()    masks scales::discard()
-## ✖ dplyr::filter()     masks stats::filter()
-## ✖ dplyr::lag()        masks stats::lag()
+## -- Conflicts ----------- tidyverse_conflicts() --
+## x readr::col_factor() masks scales::col_factor()
+## x purrr::discard()    masks scales::discard()
+## x dplyr::filter()     masks stats::filter()
+## x dplyr::lag()        masks stats::lag()
 ```
 
 ## Getting data about counties
@@ -141,17 +171,19 @@ heart05 <- select(r.total.05.07, cnty_fips, Value) %>%
   rename(fips=cnty_fips, avgdeath=Value)
 
 heart05$avgdeath <- as.numeric(replace(heart05$avgdeath, heart05$avgdeath<0, NA))
+heart05$fill <- cut(heart05$avgdeath, c(0,300, 400, 500, 600, 2000))
+levels(heart05$fill) = c("0-299.9","300-399.1","400-499.1","500-599.1",">600")
 head(heart05)
 ```
 
 ```
-##    fips avgdeath
-## 1 01001    734.7
-## 2 01003    586.7
-## 3 01005    691.3
-## 4 01007    704.3
-## 5 01009    668.5
-## 6 01011    788.0
+##    fips avgdeath      fill
+## 1 01001    734.7      >600
+## 2 01003    586.7 500-599.1
+## 3 01005    691.3      >600
+## 4 01007    704.3      >600
+## 5 01009    668.5      >600
+## 6 01011    788.0      >600
 ```
 
 ```r
@@ -159,13 +191,13 @@ summary(heart05)
 ```
 
 ```
-##      fips              avgdeath    
-##  Length:3225        Min.   :177.2  
-##  Class :character   1st Qu.:472.3  
-##  Mode  :character   Median :540.3  
-##                     Mean   :551.6  
-##                     3rd Qu.:618.2  
-##                     Max.   :989.4  
+##      fips              avgdeath            fill     
+##  Length:3225        Min.   :177.2   0-299.9  :   7  
+##  Class :character   1st Qu.:472.3   300-399.1: 156  
+##  Mode  :character   Median :540.3   400-499.1: 974  
+##                     Mean   :551.6   500-599.1:1097  
+##                     3rd Qu.:618.2   >600     : 981  
+##                     Max.   :989.4   NA's     :  10  
 ##                     NA's   :10
 ```
 
@@ -211,17 +243,61 @@ ggcounties
 
 ```r
 gg05 <- ggcounties + geom_map(data=heart05, map=cmap,
-                    aes(fill=avgdeath, map_id=fips),
+                    aes(fill=fill, map_id=fips),
                     color="#2b2b2b", size=0.05)
-gg05 <- gg05 + scale_fill_viridis(name="Yearly Deaths by 100,000")
+gg05 <- gg05 + scale_fill_manual(values=c("#10052e","#4a126b","#a52c60","#ed6925","#f7d03c"))
 gg05 <- gg05 + labs(title="Heart Disease Deaths 2005-2007",
                 subtitle="Content source: Centers for Disease Control and Prevention",
                 caption="Data from https://www.cdc.gov/heartdisease/statistics_maps.htm")
-gg05 <- gg05 + theme_map(base_family="Arial Narrow")
-gg05 <- gg05 + theme(legend.position=c(0.82, 0.25))
+gg05 <- gg05 + theme_map(base_family="Arial")
 gg05 <- gg05 + theme(plot.title=element_text(face="bold", size=14, margin=margin(b=6)))
 gg05 <- gg05 + theme(plot.subtitle=element_text(size=10, margin=margin(b=-14)))
 gg05
+```
+
+```
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
+## font family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
+## font family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
+## font family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
+## font family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
+## font family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
+## font family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
+## font family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
+## font family not found in Windows font database
+```
+
+```
+## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x
+## $y, : font family not found in Windows font database
+
+## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x
+## $y, : font family not found in Windows font database
+```
+
+```
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
+## font family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
+## font family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
+## font family not found in Windows font database
 ```
 
 ![](cvd-map-markdown_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
