@@ -246,6 +246,7 @@ gg05 <- ggcounties + geom_map(data=heart05, map=cmap,
                     aes(fill=fill, map_id=fips),
                     color="#2b2b2b", size=0.05)
 gg05 <- gg05 + scale_fill_manual(values=c("#10052e","#4a126b","#a52c60","#ed6925","#f7d03c"))
+gg05 <- gg05 + theme_void() + theme(legend.position="none")
 gg05
 ```
 
@@ -293,6 +294,7 @@ gg07 <- ggcounties + geom_map(data=heart07, map=cmap,
                     aes(fill=fill, map_id=fips),
                     color="#2b2b2b", size=0.05)
 gg07 <- gg07 + scale_fill_manual(values=c("#10052e","#4a126b","#a52c60","#ed6925","#f7d03c"))
+gg07 <- gg07 + theme_void() + theme(legend.position="none")
 gg07
 ```
 
@@ -338,6 +340,7 @@ gg09 <- ggcounties + geom_map(data=heart09, map=cmap,
                     aes(fill=fill, map_id=fips),
                     color="#2b2b2b", size=0.05)
 gg09 <- gg09 + scale_fill_manual(values=c("#10052e","#4a126b","#a52c60","#ed6925","#f7d03c"))
+gg09 <- gg09 + theme_void() + theme(legend.position="none")
 gg09
 ```
 
@@ -384,6 +387,7 @@ gg11 <- ggcounties + geom_map(data=heart11, map=cmap,
                     aes(fill=fill, map_id=fips),
                     color="#2b2b2b", size=0.05)
 gg11 <- gg11 + scale_fill_manual(values=c("#10052e","#4a126b","#a52c60","#ed6925","#f7d03c"))
+gg11 <- gg11 + theme_void() + theme(legend.position="none")
 gg11
 ```
 
@@ -430,6 +434,7 @@ gg13 <- ggcounties + geom_map(data=heart13, map=cmap,
                     aes(fill=fill, map_id=fips),
                     color="#2b2b2b", size=0.05)
 gg13 <- gg13 + scale_fill_manual(values=c("#10052e","#4a126b","#a52c60","#ed6925","#f7d03c"))
+gg13 <- gg13 + theme_void() + theme(legend.position="none")
 gg13
 ```
 
